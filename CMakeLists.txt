@@ -18,3 +18,11 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   sfml-audio
 )
+
+
+add_executable(${PROJECT_NAME}_sample
+  src/${PROJECT_NAME}/sample.cpp
+)
+target_link_libraries(${PROJECT_NAME}_sample
+  ${PROJECT_NAME}
+)

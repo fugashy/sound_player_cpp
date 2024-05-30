@@ -1,10 +1,14 @@
 #include "sound_player_cpp/player.hpp"
-#include <mutex>
+
+#include <chrono>
+#include <iostream>
+#include <fstream>
+#include <thread>
 
 namespace
 {
 constexpr size_t kBufferSize = 4096;
-constexpr uint32_t kSampleRate = 44100;
+constexpr uint32_t kSampleRate = 12280;
 constexpr uint32_t kChannelCount = 2;  // stereo
 }
 
@@ -36,8 +40,35 @@ Player::~Player()
   this->stop();
 }
 
-void Player::SetAudioData(const InputType& audio_data)
+bool Player::SetAudioData(const std::string& file_path)
 {
+  std::ifstream file(file_path, std::ios::binary);
+  if (!file)
+  {
+    std::cerr << "Failed to open: " << file_path.c_str() << std::endl;
+    return false;
+  }
+
+  // header
+//char buffer[4];
+//file.read(buffer, 4);
+//if (std::strncmp(buffer, "RIFF", 4) != 0)
+//{
+//  std::cerr << "Not a valid WAV file: " << file_path << std::endl;
+//  return 0;
+//}
+//std::cout << "file header: " << buffer << std::endl;
+
+  InputType data(
+      (std::istreambuf_iterator<char>(file)),
+      std::istreambuf_iterator<char>());
+  return this->SetAudioData(data);
+}
+
+bool Player::SetAudioData(const InputType& audio_data)
+{
+  if (audio_data.empty()) return false;
+
   std::lock_guard<std::mutex> lock(mutex_);
   audio_data_.clear();
   audio_data_.reserve(audio_data.size() / 2);
@@ -48,6 +79,7 @@ void Player::SetAudioData(const InputType& audio_data)
     audio_data_.push_back(sample);
   }
   current_sample_index_ = 0;
+  return true;
 }
 
 void Player::Play()
@@ -84,6 +116,14 @@ void Player::onSeek(sf::Time time_offset)
 {
   std::lock_guard<std::mutex> lock(mutex_);
   current_sample_index_ = time_offset.asMilliseconds() * sample_rate_ / 1000 * channel_count_;
+}
+
+void Player::WaitForEnd() const
+{
+  while (this->getStatus() == sf::SoundStream::Playing)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  }
 }
 
 }  // namespace sound_player_cpp

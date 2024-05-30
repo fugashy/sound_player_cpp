@@ -1,11 +1,8 @@
 #ifndef SOUND_PLAYER_CPP_PLAYER_HPP_
 #define SOUND_PLAYER_CPP_PLAYER_HPP_
-#include <memory>
 #include <vector>
 #include <string>
-#include <thread>
 #include <mutex>
-#include <condition_variable>
 
 #include <SFML/Audio.hpp>
 
@@ -22,9 +19,11 @@ public:
 
   static Player& GetInstance();
 
-  void SetAudioData(const InputType& data);
+  bool SetAudioData(const std::string& file_path);
+  bool SetAudioData(const InputType& data);
   void Play();
   void Stop();
+  void WaitForEnd() const;
 
 protected:
   bool onGetData(Chunk& data) override;
