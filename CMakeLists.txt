@@ -18,6 +18,18 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   sfml-audio
 )
+install(
+  TARGETS
+    ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+install(
+  DIRECTORY include/
+  DESTINATION include)
 
 
 add_executable(${PROJECT_NAME}_sample
