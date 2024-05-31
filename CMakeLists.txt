@@ -38,3 +38,8 @@ add_executable(${PROJECT_NAME}_sample
 target_link_libraries(${PROJECT_NAME}_sample
   ${PROJECT_NAME}
 )
+
+install(EXPORT ${PROJECT_NAME}
+  FILE ${PROJECT_NAME}-config.cmake
+  DESTINATION share/cmake/${PROJECT_NAME}/
+  EXPORT_LINK_INTERFACE_LIBRARIES)
