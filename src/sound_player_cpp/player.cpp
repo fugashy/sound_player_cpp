@@ -67,7 +67,35 @@ bool Player::SetAudioData(const std::string& file_path)
 
 bool Player::SetAudioData(const InputType& audio_data)
 {
-  if (audio_data.empty()) return false;
+  if (audio_data.size() < 44)
+  {
+    std::cerr << "Audio data is too small" << std::endl;
+    return false;
+  }
+
+  // parse header
+  if (std::strncmp(reinterpret_cast<const char*>(audio_data.data()), "RIFF", 4) != 0 ||
+      std::strncmp(reinterpret_cast<const char*>(audio_data.data() + 8), "WAVE", 4) != 0)
+  {
+    std::cerr << "Unexpected header" << std::endl;
+    return false;
+  }
+
+  // fmt subchunk
+  const unsigned int subchunk_1_size = *reinterpret_cast<const unsigned int*>(audio_data.data() + 16);
+  const short int audio_format = *reinterpret_cast<const short int*>(audio_data.data() + 20);
+  if (audio_format != 1)
+  {
+    std::cerr << "Unsupported WAV data: only PCM format is supported" << std::endl;
+    return false;
+  }
+
+  channel_count_ = *reinterpret_cast<const unsigned short*>(audio_data.data() + 22);
+  sample_rate_ = *reinterpret_cast<const unsigned int*>(audio_data.data() + 24);
+  std::cout
+    << "channel count: " << channel_count_ << std::endl
+    << "sample rate  : " << sample_rate_ << std::endl;
+  this->initialize(channel_count_, sample_rate_);
 
   std::lock_guard<std::mutex> lock(mutex_);
   audio_data_.clear();

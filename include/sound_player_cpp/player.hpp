@@ -34,8 +34,8 @@ private:
   ~Player();
 
   const size_t buffer_size_;
-  const uint32_t sample_rate_;
-  const uint32_t channel_count_;
+  uint32_t sample_rate_;
+  uint32_t channel_count_;
   size_t current_sample_index_;
   bool is_playing_;
 
