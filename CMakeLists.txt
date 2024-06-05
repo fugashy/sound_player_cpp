@@ -16,7 +16,8 @@ add_library(${PROJECT_NAME} SHARED
   src/${PROJECT_NAME}/player.cpp
 )
 target_link_libraries(${PROJECT_NAME}
-  sfml-audio
+  PUBLIC
+    sfml-audio
 )
 install(
   TARGETS
