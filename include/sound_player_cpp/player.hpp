@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <mutex>
+#include <memory>
 
 #include <SFML/Audio.hpp>
 
@@ -12,12 +13,12 @@ namespace sound_player_cpp
 class Player : public sf::SoundStream
 {
 public:
+  using SharedPtr = std::shared_ptr<Player>;
+
   using InputType = std::vector<unsigned char>;
 
-  Player(const Player&) = delete;
-  Player& operator=(const Player&) = delete;
-
-  static Player& GetInstance();
+  Player();
+  ~Player();
 
   bool SetAudioData(const std::string& file_path);
   bool SetAudioData(const InputType& data);
@@ -30,8 +31,6 @@ protected:
   void onSeek(sf::Time time_offset) override;
 
 private:
-  Player();
-  ~Player();
 
   const size_t buffer_size_;
   uint32_t sample_rate_;

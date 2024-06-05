@@ -12,8 +12,9 @@ int main(int argc, char** argv)
   }
   std::string file_path = argv[1];
 
-  sound_player_cpp::Player::GetInstance().SetAudioData(file_path);
-  sound_player_cpp::Player::GetInstance().Play();
-  sound_player_cpp::Player::GetInstance().WaitForEnd();
+  sound_player_cpp::Player::SharedPtr player(new sound_player_cpp::Player());
+  player->SetAudioData(file_path);
+  player->Play();
+  player->WaitForEnd();
   return EXIT_SUCCESS;
 }

@@ -16,12 +16,6 @@ constexpr uint32_t kChannelCount = 2;  // stereo
 namespace sound_player_cpp
 {
 
-Player& Player::GetInstance()
-{
-  static Player instance;
-  return instance;
-}
-
 Player::Player()
   : buffer_size_(kBufferSize),
     sample_rate_(kSampleRate),
@@ -98,7 +92,8 @@ bool Player::SetAudioData(const InputType& audio_data)
   this->initialize(channel_count_, sample_rate_);
 
   std::lock_guard<std::mutex> lock(mutex_);
-  audio_data_.clear();
+  std::vector<sf::Int16>().swap(audio_data_);
+//audio_data_.clear();
   audio_data_.reserve(audio_data.size() / 2);
   for (size_t i = 0; i < audio_data.size(); i += 2)
   {
